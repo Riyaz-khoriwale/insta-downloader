@@ -103,7 +103,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gray-900 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]">
+    <div className="min-h-screen flex flex-col items-center bg-gray-100 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),rgba(255,255,255,0))]">
       <Header />
       <main className="flex-grow w-full flex flex-col items-center justify-center py-12 px-4">
         <UrlInputForm

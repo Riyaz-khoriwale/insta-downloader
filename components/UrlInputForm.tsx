@@ -20,10 +20,10 @@ const UrlInputForm: React.FC<UrlInputFormProps> = ({ url, onUrlChange, onSubmit,
 
   return (
     <div className="w-full max-w-2xl text-center px-4">
-      <h2 className="text-3xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-green-300 via-blue-500 to-purple-600">
+      <h2 className="text-3xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-blue-500 to-purple-600">
         Download Instagram Videos
       </h2>
-      <p className="text-gray-300 mb-8 text-lg">
+      <p className="text-gray-600 mb-8 text-lg">
         Just paste the link to an Instagram video below and get your download links instantly. It's fast, free, and easy.
       </p>
       <form onSubmit={handleSubmit} className="relative flex flex-col sm:flex-row items-center gap-4">
@@ -32,7 +32,7 @@ const UrlInputForm: React.FC<UrlInputFormProps> = ({ url, onUrlChange, onSubmit,
           value={url}
           onChange={(e) => onUrlChange(e.target.value)}
           placeholder="Paste Instagram video URL here..."
-          className="w-full text-lg px-6 py-4 rounded-lg bg-gray-800 border-2 border-gray-700 focus:border-pink-500 focus:ring-pink-500 focus:outline-none transition-colors duration-300"
+          className="w-full text-lg px-6 py-4 rounded-lg bg-white border-2 border-gray-300 focus:border-pink-500 focus:ring-pink-500 focus:outline-none transition-colors duration-300"
           disabled={isLoading}
         />
         <button
@@ -57,7 +57,7 @@ const UrlInputForm: React.FC<UrlInputFormProps> = ({ url, onUrlChange, onSubmit,
         </button>
       </form>
       {error && (
-        <div className="mt-4 flex items-center justify-center gap-2 text-red-400 font-semibold p-3 bg-red-500/10 border border-red-500/30 rounded-lg animate-shake">
+        <div className="mt-4 flex items-center justify-center gap-2 text-red-600 font-semibold p-3 bg-red-100 border border-red-200 rounded-lg animate-shake">
           <ExclamationIcon className="w-6 h-6" />
           <span>{error}</span>
         </div>

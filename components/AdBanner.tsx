@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface AdBannerProps {
@@ -13,8 +12,8 @@ const AdBanner: React.FC<AdBannerProps> = ({ size }) => {
   };
 
   return (
-    <div className={`flex items-center justify-center bg-gray-700/50 border-2 border-dashed border-gray-600 rounded-lg my-8 ${sizeClasses[size]}`}>
-      <span className="text-gray-400 font-semibold">Advertisement</span>
+    <div className={`flex items-center justify-center bg-gray-200/50 border-2 border-dashed border-gray-300 rounded-lg my-8 ${sizeClasses[size]}`}>
+      <span className="text-gray-500 font-semibold">Advertisement</span>
     </div>
   );
 };

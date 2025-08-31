@@ -1,11 +1,10 @@
-
 import React from 'react';
 
 const AffiliateCard: React.FC<{ title: string; description: string; link: string }> = ({ title, description, link }) => (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 hover:border-pink-500/50 hover:shadow-lg transition-all duration-300">
-        <h3 className="font-bold text-lg mb-2 text-white">{title}</h3>
-        <p className="text-gray-400 mb-4 text-sm">{description}</p>
-        <a href={link} target="_blank" rel="noopener noreferrer" className="text-pink-400 font-semibold hover:underline">
+    <div className="bg-white border border-gray-200 rounded-lg p-6 hover:border-pink-500/50 hover:shadow-lg transition-all duration-300">
+        <h3 className="font-bold text-lg mb-2 text-gray-900">{title}</h3>
+        <p className="text-gray-600 mb-4 text-sm">{description}</p>
+        <a href={link} target="_blank" rel="noopener noreferrer" className="text-pink-500 font-semibold hover:underline">
             Learn More &rarr;
         </a>
     </div>

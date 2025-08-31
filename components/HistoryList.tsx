@@ -43,13 +43,13 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onClear
   return (
     <div className="w-full max-w-2xl mt-8 animate-fadeInUp px-4">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-300 flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
           <ClockIcon className="w-5 h-5" />
           Recent Links
         </h3>
         <button
           onClick={handleClear}
-          className="flex items-center gap-1 text-sm text-gray-400 hover:text-red-400 transition-colors duration-200"
+          className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-500 transition-colors duration-200"
           aria-label="Clear history"
         >
           <TrashIcon className="w-4 h-4" />
@@ -66,7 +66,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onClear
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search history..."
-          className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-800 border-2 border-gray-700 focus:border-pink-500 focus:ring-pink-500 focus:outline-none transition-colors duration-300 text-gray-200"
+          className="w-full pl-10 pr-4 py-2 rounded-lg bg-white border-2 border-gray-300 focus:border-pink-500 focus:ring-pink-500 focus:outline-none transition-colors duration-300 text-gray-800"
           aria-label="Search history"
         />
       </div>
@@ -84,7 +84,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onClear
               <button
                 key={`${index}-${url}`}
                 onClick={() => handleItemClick(url)}
-                className={`w-full text-left p-3 bg-gray-800/50 rounded-lg hover:bg-gray-700/50 transition-colors truncate text-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 ${clearAnimation} ${newAnimation} ${clickAnimation}`}
+                className={`w-full text-left p-3 bg-white/50 rounded-lg hover:bg-gray-200 transition-colors truncate text-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500 ${clearAnimation} ${newAnimation} ${clickAnimation}`}
                 title={url}
               >
                 {url}
@@ -92,7 +92,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onClear
             )
           })
         ) : (
-          <p className="text-center text-gray-400 p-4">No matching links found.</p>
+          <p className="text-center text-gray-500 p-4">No matching links found.</p>
         )}
       </div>
     </div>
