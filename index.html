@@ -6,7 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>InstaDownloader - Free Instagram Video Downloader</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
+      html, body, #root {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
       @keyframes fadeInUp {
         from {
           opacity: 0;
@@ -62,18 +70,289 @@
       .animate-pulse-feedback {
         animation: pulse-feedback 0.5s ease-in-out;
       }
+      .gradient-bg {
+        background: linear-gradient(135deg, #8A2BE2 0%, #4B0082 100%);
+      }
+      .result-card {
+        transition: all 0.3s ease;
+      }
+      .result-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react/": "https://aistudiocdn.com/react@^19.1.1/",
-    "react": "https://aistudiocdn.com/react@^19.1.1",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/"
-  }
-}
-</script>
-</head>
+  </head>
   <body class="bg-gray-100 text-gray-800">
     <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      const InstaDownloader = () => {
+        const [url, setUrl] = useState('');
+        const [loading, setLoading] = useState(false);
+        const [error, setError] = useState('');
+        const [downloadData, setDownloadData] = useState(null);
+        const [history, setHistory] = useState([]);
+        const [copied, setCopied] = useState(false);
+
+        // Load history from localStorage on component mount
+        useEffect(() => {
+          const savedHistory = localStorage.getItem('instaDownloadHistory');
+          if (savedHistory) {
+            setHistory(JSON.parse(savedHistory));
+          }
+        }, []);
+
+        // Save history to localStorage whenever it changes
+        useEffect(() => {
+          localStorage.setItem('instaDownloadHistory', JSON.stringify(history));
+        }, [history]);
+
+        const isValidInstagramUrl = (url) => {
+          const instagramRegex = /https?:\/\/(www\.)?instagram\.com\/(p|reel|stories)\/([^/?#&]+).*/;
+          return instagramRegex.test(url);
+        };
+
+        const handleDownload = async () => {
+          if (!url.trim()) {
+            setError('Please enter an Instagram URL');
+            return;
+          }
+
+          if (!isValidInstagramUrl(url)) {
+            setError('Please enter a valid Instagram URL');
+            return;
+          }
+
+          setLoading(true);
+          setError('');
+          setDownloadData(null);
+
+          try {
+            // Simulate API call - in a real app, you would call your backend service
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Mock response data
+            const mockData = {
+              success: true,
+              media: [
+                {
+                  type: 'video',
+                  url: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+                  thumbnail: 'https://via.placeholder.com/600x600/8A2BE2/FFFFFF?text=Instagram+Video',
+                  width: 720,
+                  height: 720
+                }
+              ],
+              title: 'Sample Instagram Video',
+              caption: 'This is a sample Instagram video caption for demonstration purposes.'
+            };
+
+            setDownloadData(mockData);
+            
+            // Add to history if not already present
+            if (!history.some(item => item.url === url)) {
+              setHistory(prev => [...prev, { 
+                url, 
+                title: mockData.title, 
+                thumbnail: mockData.media[0].thumbnail,
+                date: new Date().toLocaleDateString()
+              }]);
+            }
+          } catch (err) {
+            setError('Failed to fetch video. Please try again.');
+            console.error(err);
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        const handleClearHistory = () => {
+          setHistory([]);
+          localStorage.removeItem('instaDownloadHistory');
+        };
+
+        const copyToClipboard = (text) => {
+          navigator.clipboard.writeText(text);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        };
+
+        const formatFileName = (url) => {
+          const matches = url.match(/\/(p|reel|stories)\/([^/?#&]+)/);
+          if (matches && matches[2]) {
+            return `instagram_${matches[2]}.mp4`;
+          }
+          return 'instagram_video.mp4';
+        };
+
+        return (
+          <div className="min-h-screen gradient-bg pb-12">
+            <header className="container mx-auto px-4 py-8 text-center">
+              <h1 className="text-4xl font-bold text-white mb-2">Instagram Video Downloader</h1>
+              <p className="text-purple-100 text-lg">Download Instagram videos in high quality for free</p>
+            </header>
+
+            <main className="container mx-auto px-4 max-w-3xl">
+              <div className="bg-white rounded-xl shadow-2xl p-6 mb-8 animate-fadeInUp">
+                <div className="flex flex-col space-y-4">
+                  <div className="flex items-center">
+                    <div className="bg-purple-100 p-3 rounded-l-lg">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      placeholder="Paste Instagram URL here (e.g., https://www.instagram.com/p/ABC123/)"
+                      className="flex-grow p-4 border border-purple-100 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                  
+                  {error && (
+                    <div className="text-red-500 bg-red-50 p-3 rounded-lg flex items-center animate-shake">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {error}
+                    </div>
+                  )}
+                  
+                  <button
+                    onClick={handleDownload}
+                    disabled={loading}
+                    className={`bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-6 rounded-lg transition duration-300 flex items-center justify-center ${loading ? 'opacity-75 cursor-not-allowed' : ''}`}
+                  >
+                    {loading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                        Download Video
+                      </>
+                    )}
+                  </button>
+                </div>
+                
+                <p className="text-gray-500 text-sm mt-4 text-center">
+                  Works with Instagram posts, reels, and stories. Simply paste the link and click download.
+                </p>
+              </div>
+              
+              {downloadData && (
+                <div className="bg-white rounded-xl shadow-xl p-6 mb-8 animate-slideInRight">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Download Ready!
+                  </h2>
+                  
+                  <div className="result-card bg-gray-50 rounded-lg p-4 mb-4">
+                    <div className="flex flex-col md:flex-row items-start">
+                      <div className="w-full md:w-1/3 mb-4 md:mb-0">
+                        <img 
+                          src={downloadData.media[0].thumbnail} 
+                          alt={downloadData.title}
+                          className="rounded-lg w-full object-cover"
+                        />
+                      </div>
+                      <div className="w-full md:w-2/3 md:pl-6">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2">{downloadData.title}</h3>
+                        <p className="text-gray-600 mb-4">{downloadData.caption}</p>
+                        
+                        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                          <a 
+                            href={downloadData.media[0].url} 
+                            download={formatFileName(url)}
+                            className="bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-6 rounded-lg text-center transition duration-300 flex items-center justify-center"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                            Download Now
+                          </a>
+                          
+                          <button 
+                            onClick={() => copyToClipboard(url)}
+                            className="bg-purple-500 hover:bg-purple-600 text-white font-medium py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                              <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                            </svg>
+                            {copied ? 'Copied!' : 'Copy Link'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {history.length > 0 && (
+                <div className="bg-white rounded-xl shadow-xl p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-bold text-gray-800">Download History</h2>
+                    <button 
+                      onClick={handleClearHistory}
+                      className="text-red-500 hover:text-red-700 text-sm font-medium flex items-center"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      Clear History
+                    </button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {history.slice(0, 4).map((item, index) => (
+                      <div key={index} className="bg-gray-50 rounded-lg p-3 flex items-center">
+                        <img 
+                          src={item.thumbnail} 
+                          alt={item.title}
+                          className="w-16 h-16 rounded-lg object-cover"
+                        />
+                        <div className="ml-3 overflow-hidden">
+                          <h3 className="text-sm font-medium text-gray-800 truncate">{item.title}</h3>
+                          <p className="text-xs text-gray-500">{item.date}</p>
+                          <a 
+                            href={item.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-xs text-purple-500 hover:text-purple-700 mt-1 inline-block"
+                          >
+                            View Original
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </main>
+            
+            <footer className="container mx-auto px-4 mt-12 text-center text-purple-200">
+              <p>© {new Date().getFullYear()} InstaDownloader. This tool is for personal use only.</p>
+              <p className="text-sm mt-2">Instagram is a trademark of Meta Platforms, Inc. This site is not affiliated with Instagram.</p>
+            </footer>
+          </div>
+        );
+      };
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<InstaDownloader />);
+    </script>
   </body>
 </html>
